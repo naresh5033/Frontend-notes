@@ -349,10 +349,9 @@ The typography responsive is the another big part of the responsive design
 2. The other way we can actually limit the rate of growth when we re using the vw units, is to involve another nummber that not dependent on the viewport size in how the font size is calculated.
 3. so we can actually do this with the css cal(), it will let us to combine the no.of diff units
 
-
-    - h1 { font-size: calc(16px + 2vw);} --> this way the font size will stays min of 16px, atleast 16px + whatever the 2 vw is
-    - we can also use clamp(), takes 3 params(min val, preferred val, max val) it will allows us to use the min and max val to the prefered vw .
-    - h1 { font-size: clamp(28px, 16px + 2vw, 48px); }
+   - h1 { font-size: calc(16px + 2vw);} --> this way the font size will stays min of 16px, atleast 16px + whatever the 2 vw is
+   - we can also use clamp(), takes 3 params(min val, preferred val, max val) it will allows us to use the min and max val to the prefered vw .
+   - h1 { font-size: clamp(28px, 16px + 2vw, 48px); }
 
 # why we shouldn't be using px ?
 
@@ -372,20 +371,76 @@ we shouldn't be using pixels for the size, coz its not accessible and specially 
 # nesting and Bem
 
 we can apply some css rule to the parent and which will create a block formatting context and creating this one will get rid off the margin collapse effect
-- To add the BEM in our elems--> &--green {background-color: green;} and to use this modifier in our class <div class="grid__widget grid__widget--green"> but it kinda wierd to see the grid__widget class both times 
-- but there are some ways in sass we can keep the bem modifier behavior w/o having  to write the classes and the html, one way we can use this is by sass extend @ rule. to use this.
-- &--green {@extent .grid__widget; background-color: green;} so this way this bem will inherit all the styles from the parent class and in our css we can simply use <div class="grid__widget--green"> since the bem is already inherits all the props from the parent class so no need to write the parent class.
-- we can also use the var to load the parent class in the bem.. so in our parent class &__widget{$widget: &;} and now in our bem we can simply type in &--green {@extent #{$widget;}} this hashtag and the curly braces are called as interpolation this is how we load the val of the var in the sass selector name 
 
-# place holder 
+- To add the BEM in our elems--> &--green {background-color: green;} and to use this modifier in our class <div class="grid__widget grid__widget--green"> but it kinda wierd to see the grid\_\_widget class both times
+- but there are some ways in sass we can keep the bem modifier behavior w/o having to write the classes and the html, one way we can use this is by sass extend @ rule. to use this.
+- &--green {@extent .grid**widget; background-color: green;} so this way this bem will inherit all the styles from the parent class and in our css we can simply use <div class="grid**widget--green"> since the bem is already inherits all the props from the parent class so no need to write the parent class.
+- we can also use the var to load the parent class in the bem.. so in our parent class &\_\_widget{$widget: &;} and now in our bem we can simply type in &--green {@extent #{$widget;}} this hashtag and the curly braces are called as interpolation this is how we load the val of the var in the sass selector name
+
+# place holder
+
 - we can put the default props/styles in a place holder, the place holder is a special selector that contains a set of style rules and it won't be generate any final css style rule by itself but only when we re actually using the place holder somewhere else in our styles.
 - to create a place holder we ve to use % sign -- %widget {padding: u.rem(16);} and to use this place holder in our bem we can do &--green {@extent %widget;}
-- the other way is instead of using the extend to inherit the styles we can actually create the helper/ utility class 
-- which means we can create a additional class inside our parent class-- &.green {background-color: green;}  and now in our html <div class="grid__widget green"> the additional class is just green..
+- the other way is instead of using the extend to inherit the styles we can actually create the helper/ utility class
+- which means we can create a additional class inside our parent class-- &.green {background-color: green;} and now in our html <div class="grid__widget green"> the additional class is just green..
 - finally the best approach to use this utility class is by using a utility framework like tailwind which can be very handy..
-  
 
 ## Sass
 
-css with extra features and superpower, that makes writing styles easier flexible and more reusable 
+css with extra features and superpower, that makes writing styles easier flexible and more reusable
 by bringing more programing constraints like loops, fns, inheritance etc,, it also adds other features to css like rule nesting, invisible comments, parent nesting and lota other cool stuffs.. which makes it more easier to write more complex css selectors.
+
+## Gulp
+
+The gulp is the task runner it offers us more compilation options including the ability to tree shake or purge any unused styles later on, it also allow us to use the sass debugger tool which the live sass compiler doesn't ve
+
+- `yarn add gulp gulp-sass sass`
+
+and to run the gulpfile.js `gulp` this will compile our css and then it gon set up a watcher on our sass file that'll looking for the changes.
+
+- note: the naming conv of the file name starts with underscore ex \_variable.scss is the way of telling the sass compiler to ignore the file for compiling, or that file is just a partial and we just wana use it else where and we don't wana compile it
+- in sass order of imports matters for ex - @import 'variables'; @import 'base'; so the sass knows anything that declares inside the vars partial b4 the base file, and when it pulls the base file it knows what the vars are
+- and if we change the order the other way around it will throws error and yells it can't read the var of undefined inside the base file, coz the sass compiler works/ reads from top to bottom
+- so in conclusion if the file depends on the val that's declared in the other file, then it must be below the file that it depends on..
+
+- To use the debug or to see the val in the console we can use @debug "hello world" This is useful when we want to find out the val of some calculation such as @debug math.div(10, 2); we can see the o/p of 5 in the console
+
+# Maps in sass
+
+- maps just like in other prog lang used, we can collect lota diff vals/ vars together in some kinda collection which will ve KVP, its really useful for the utility classes where we loop thru a map and generate a class for each val in the map.
+- ex $color{"purple": #9900ff;} and @debug map-get($color, "purple"); this will get the val of the key for that color var
+- and the other map fns such as map-has-key() --> bool, map-remove() -> will remove the val for the key.. map-merge($color, ("pink: #ff2908")) is sim to the append to add the val to our existing collection
+
+# loops
+
+we can loop thru the map and generate a classes for each of those vals.. ex- @each $key,$val in $colors { .text-#{key}} --> for the each kvp in that collection we can get access to the key and val -- refer the \_colors.scss
+
+# parent selectors
+
+This will helps us to variations of classes to add the artifacts like hover, so basically we wana use the hover pseudo selector to create a class
+
+# mixins
+
+the mixins are way for us to group together the bunch of css props and vals so that it can be included in many diff css rules, for ex it might be diff group of elems that all contains the same padding, color, margin, fonts props and vals, now instead of rewriting those props and vals for each of those in their own css rule we can create a mixin.
+
+- Ex @mixin btn(){ put all the common props and vals} the we can use this mixins to control the code duplication/ repeatation.
+- inside the mixin's paranthesis we can pass the val as arg.. when the same props of the diff elem has diff vals then we can pass in the val inside the mixing paranthesis
+
+# utility classes
+
+like we seen earlier in utility classes we can create some useful built in modules such as math..etc.
+
+# Break pts
+
+- Media query -- lets see how we can use the classes in some grid s/m to display the breakpts.. and with the breakpts lets generate some grid s/m.
+- we'll be using the mixins to gen the diff breakpts and then we ve to create the col classes for each one of these breakpts --> refer _grid.scss
+
+# @extend
+
+- the @extend feature in the sass, as we know the extends allow us to extend or inherit the prop from another rule 
+- its almost like the mixins where we groups together but there are couple of differences 
+- 1st we don't pass the arg when we use the @extend, if we need an arg then we ve to use the mixin 
+- 2nd, the way its compiled in the css is diff than if we used the mixins. ie if we use the extend then in the o/p file all the elems are comma seperated, but if we used mixins then they re not comma separated they all ve the own separate rules with the props duplicated. 
+
+- work around in the sass file if we create the class and then use the class to extend its prop (just to extend that class in another elem don't ve any usage with the class ), but in the o/p the css will generate a class for that which we don't need. 
+- then we can use % symbol(place holder rule) --> %flex-container-class istead of .flex-container-class
